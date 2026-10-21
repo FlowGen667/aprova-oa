@@ -1,0 +1,2 @@
+DASHBOARD_PASSWORD=troque-esta-senha
+SESSION_SECRET=uma-string-longa-e-aleatoria

@@ -1,0 +1,13 @@
+{
+  "name": "yamileth-gill",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "setup": "wrangler d1 migrations apply yg-db --local",
+    "dev": "wrangler dev --local --port 8787",
+    "deploy": "wrangler d1 migrations apply yg-db --remote && wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.151.2"
+  }
+}

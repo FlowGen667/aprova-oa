@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Entrar · Panel Yamileth Gill</title>
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/dashboard/assets/app.css">
+</head>
+<body>
+  <main class="login">
+    <span class="login__orb login__orb--a" aria-hidden="true"></span>
+    <span class="login__orb login__orb--b" aria-hidden="true"></span>
+
+    <div class="login__card" id="card">
+      <img src="/logo.png" alt="Yamileth Gill" width="74" height="74">
+      <h1>Panel de Yamileth</h1>
+      <p>Leads, visitas y resultados de tu landing.</p>
+
+      <form id="login-form" novalidate>
+        <label for="password">Contraseña</label>
+        <div class="pw">
+          <input class="input" id="password" name="password" type="password" autocomplete="current-password" required autofocus>
+          <button type="button" id="toggle" aria-label="Mostrar contraseña" aria-pressed="false">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <button class="btn btn--gold" type="submit" id="submit">Entrar al panel</button>
+        <p class="login__err" id="err" role="alert"></p>
+      </form>
+      <p class="login__foot"><a href="/">Volver a la landing</a></p>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      var form = document.getElementById('login-form');
+      var input = document.getElementById('password');
+      var err = document.getElementById('err');
+      var btn = document.getElementById('submit');
+      var card = document.getElementById('card');
+      var toggle = document.getElementById('toggle');
+
+      toggle.addEventListener('click', function () {
+        var show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        toggle.setAttribute('aria-pressed', String(show));
+        toggle.setAttribute('aria-label', show ? 'Ocultar contraseña' : 'Mostrar contraseña');
+      });
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        err.textContent = '';
+        if (!input.value) { err.textContent = 'Escribe tu contraseña.'; input.focus(); return; }
+        btn.disabled = true;
+        btn.textContent = 'Entrando…';
+        fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: input.value }) })
+          .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, body: j }; }); })
+          .then(function (res) {
+            if (res.ok) { location.href = '/dashboard'; return; }
+            err.textContent = res.body.error || 'No pudimos iniciar sesión.';
+            card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake');
+            input.select();
+          })
+          .catch(function () { err.textContent = 'Sin conexión con el servidor.'; })
+          .then(function () { btn.disabled = false; btn.textContent = 'Entrar al panel'; });
+      });
+    })();
+  </script>
+</body>
+</html>
