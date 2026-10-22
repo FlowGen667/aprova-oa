@@ -11,14 +11,6 @@
     // a API e o painel passam primeiro pelo worker (login, dados); o resto é estático
     "run_worker_first": ["/api/*", "/dashboard", "/dashboard/*"]
   },
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "yg-db",
-      // troque pelo id real depois de rodar `npx wrangler d1 create yg-db` (só para publicar)
-      "database_id": "00000000-0000-0000-0000-000000000000",
-      "migrations_dir": "./migrations"
-    }
-  ],
+  
   "observability": { "enabled": true }
 }
