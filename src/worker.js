@@ -1,14 +1,20 @@
 // Worker da landing de Yamileth Gill - versão simplificada com dados fictícios
-// - /dashboard/*  → painel acessível para testes (sem senha)
-// - /api/*        → rotas com dados fictícios (sem banco D1)
-// - resto          → arquivos estáticos de ./public
+// - /dashboard/assets/* → CSS/JS do painel (primeira prioridade)
+// - /dashboard/*        → painel HTML (segunda prioridade)
+// - /api/*              → rotas com dados fictícios (sem banco D1)
+// - resto                → arquivos estáticos de ./public
 
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const path = url.pathname;
     
-    // PRIMEIRO: Painel - ACESSÍVEL PARA TESTES (sem senha)
+    // PRIMEIRO: Assets do dashboard - CSS, JS, imagens do painel
+    if (path.startsWith('/dashboard/assets/')) {
+      return env.ASSETS.fetch(request);
+    }
+    
+    // SEGUNDO: Painel - ACESSÍVEL PARA TESTES (sem senha)
     if (path === '/dashboard' || path.startsWith('/dashboard/')) {
       if (path === '/dashboard/login' || path === '/dashboard/login.html') {
         return env.ASSETS.fetch(new Request(new URL('/dashboard/login', url), request));
@@ -16,22 +22,7 @@ export default {
       return env.ASSETS.fetch(new Request(new URL('/dashboard/', url), request));
     }
     
-    // DEPOIS: Assets - servir arquivos estáticos
-    if (path.startsWith('/dashboard/assets/') || 
-        path.startsWith('/assets/') ||
-        path === '/apple-touch-icon.png' ||
-        path === '/favicon.png' ||
-        path === '/hero_mobile_solta.png' ||
-        path === '/logo.png' ||
-        path === '/flowgen.png' ||
-        path === '/index.html' ||
-        path === '/' ||
-        path.startsWith('/hero') ||
-        path.startsWith('/flowgen')) {
-      return env.ASSETS.fetch(request);
-    }
-    
-    // API - Dados fictícios (sem banco de dados - evita erro JSON)
+    // TERCEIRO: API - Dados fictícios (sem banco de dados - evita erro JSON)
     if (path === '/api/stats' && request.method === 'GET') {
       return new Response(JSON.stringify({
         range: { days: 30 },
@@ -111,6 +102,20 @@ export default {
         status: 200,
         headers: { 'Content-Type': 'application/json' }
       });
+    }
+    
+    // QUARTO: Assets gerais do site
+    if (path.startsWith('/assets/') ||
+        path === '/apple-touch-icon.png' ||
+        path === '/favicon.png' ||
+        path === '/hero_mobile_solta.png' ||
+        path === '/logo.png' ||
+        path === '/flowgen.png' ||
+        path === '/index.html' ||
+        path === '/' ||
+        path.startsWith('/hero') ||
+        path.startsWith('/flowgen')) {
+      return env.ASSETS.fetch(request);
     }
     
     // Landing page routes
